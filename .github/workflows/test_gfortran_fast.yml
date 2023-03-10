@@ -28,7 +28,7 @@ jobs:
         compiler: [gcc]
         version: [10, 12] # gfortran 9 is buggy wit logical variables when invoked with -Ofast
         ikind: [i2, i4]
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
         testdim: [small]
 
     steps:

@@ -21,7 +21,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         #ikind: [i2, i4, i8]
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
 
     steps:
       - name: Checkout repository

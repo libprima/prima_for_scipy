@@ -28,7 +28,7 @@ jobs:
         compiler: [gcc]
         version: [9, 11, 12]  # Too expensive to test all versions
         ikind: [i2, i4]
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
         testdim: [small]
         exclude:
           - os: windows-latest

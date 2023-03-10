@@ -21,7 +21,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]  # As of 20221217, the flang installed by ../scripts/install_flang may only work with ubuntu-22.04
         ikind: [i2]
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
         fflags: [-O1, -O2, -O3, -g, -fast]
         testdim: [small, big]
 

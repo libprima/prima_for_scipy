@@ -19,7 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         ikind: [i2]  # [i2, i4, i8] fails due to unavailability of license servers
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
 
     steps:
       - name: Checkout repository

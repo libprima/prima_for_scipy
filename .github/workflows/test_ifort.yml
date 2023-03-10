@@ -27,7 +27,7 @@ jobs:
         # Windows does not work. On Windows, the options for ifort/ifx starts with "/" instead of "-".
         os: [ubuntu-latest, macos-latest]
         ikind: [i2]
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
         fflags: [-O1, -O2, -O3, -g, -fast]
         testdim: [small, big]
 

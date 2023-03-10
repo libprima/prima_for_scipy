@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         ikind: [i2]
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
         fflags: [-O1, -O2, -O3, -g, -fast]
         testdim: [small, big]
 

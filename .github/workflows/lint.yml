@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         linter: [flint]
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
 
     steps:
       - name: Checkout repository

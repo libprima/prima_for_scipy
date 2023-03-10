@@ -29,7 +29,7 @@ jobs:
         #os: [ubuntu-latest, macos-latest]
         os: [ubuntu-latest]
         ikind: [i2]
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
         fflags: [-O1, -O2, -O3, -g, -fast]
         testdim: [small, big]
 

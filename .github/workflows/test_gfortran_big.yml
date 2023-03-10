@@ -28,7 +28,7 @@ jobs:
         compiler: [gcc]
         version: [12]
         ikind: [i2, i4]
-        solver: [cobyla]
+        solver: [cobyla, uobyqa, newuoa, bobyqa, lincoa]
         fflags: [-O1, -O2, -g, -fast]
         testdim: [big]
 
