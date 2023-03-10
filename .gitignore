@@ -1,0 +1,68 @@
+README.pdf
+
+# misc files for testing and debugging
+trash/
+matlab/tests/testdata/
+core
+core.*
+*.cmdx
+*.cmod
+*.dbg
+*.ilm
+*.log
+*.mod
+*__genmod.f90
+flang_unparsed_file*.*90
+*.o
+*.out
+*.output
+*.pyd
+*.so
+*.stb
+*NSConflict*
+*_output.txt
+test.newuoa/
+test.cobyla/
+test.bobyqa/
+test.uobyqa/
+test.lincoa/
+testdata/
+bak/
+*_test
+*_tst
+*_tst_bobyqa
+*_tst_cobyla
+*_tst_lincoa
+*_tst_newuoa
+*_tst_uobyqa
+*log
+NEWUOA_output.txt
+fort.*
+log*
+log/
+mlog/
+flog/
+test_data/
+
+# automatically generated intersection-form files
+intersection_form/
+.intersection_form/
+.interform
+
+# automatically generated m files
+all_precisions.m
+all_variants.m
+
+# plusFORT
+SPAGged/
+_pf_data/
+_gxchk.htm
+
+# Compiled MEX files
+*.mex*
+
+# PyCharm IDE
+.idea/
+
+# Mac files
+.DS_Store
