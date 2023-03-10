@@ -14,8 +14,9 @@ Dedicated to late Professor [**M. J. D. Powell**](https://www.zhangzk.net/powell
 
 ### What
 
-**This is a partial copy of [PRIMA](http://www.libprima.net). As of March 10, 2023, only the Fortran
-code of COBYLA is included.**
+**This is a partial copy of [PRIMA](http://www.libprima.net). As of March 10, 2023, it includes only the Fortran
+code of COBYLA.**
+See the [PRIMA](https://github.com/libprima/prima) repository for the full PRIMA project.
 
 PRIMA provides the reference implementation for Powell's renowned derivative-free optimization methods,
 namely COBYLA, UOBYQA, NEWUOA, BOBYQA, and LINCOA. The "P" in the name stands for
