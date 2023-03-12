@@ -8,11 +8,30 @@ module bobyqb_mod
 !
 ! Coded by Zaikun ZHANG (www.zhangzk.net) based on Powell's code and the BOBYQA paper.
 !
+! N.B. (Zaikun 20230312): In Powell's code, the strategy concerning RESCUE is a bit complex.
+!
+! 1. Suppose that a trust-region step D is calculated. Powell's code sets KNEW_TR before evaluating
+! F at the trial point XOPT+D, assuming that the value of F at the trial point is not better than
+! the current FOPT. With this KNEW_TR, the denominator of the update is calculated. If this
+! denominator is sufficiently large, then evaluate F at XOPT+D, recalculate KNEW_TR if the function
+! value turns out better than FOPT, and perform the update to include XOPT+D in the interpolation.
+! If the denominator is not sufficiently large, then RESCUE is called, and another trust-region
+! step is taken immediately after, discarding the previously calculated trust-region step D.
+!
+! 2. Suppose that a geometry step D is calculated. Then KNEW_GEO must have been set before. Powell's
+! code then calculates the denominator of the update. If the denominator is sufficiently large, then
+! evaluate F at XOPT+D, and perform the update. If the denominator is not sufficiently large, then
+! RESCUE is called; if RESCUE does not evaluate F at any new point (allowed by Powell's code but not
+! ours), then take a new geometry step, or else take a trust-region step, discarding the previously
+! calculated geometry step D in both cases.
+!
+! 3. If it turns out necessary to call RESCUE again, but no new function value has been evaluated
+! after the last RESCUE, then Powell's code will terminate.
 ! Dedicated to the late Professor M. J. D. Powell FRS (1936--2015).
 !
 ! Started: February 2022
 !
-! Last Modified: Wednesday, March 08, 2023 PM11:55:26
+! Last Modified: Sunday, March 12, 2023 PM07:55:06
 !--------------------------------------------------------------------------------------------------!
 
 implicit none
@@ -333,8 +352,9 @@ do tr = 1, maxtr
             dnormsav = REALMAX
             moderrsav = REALMAX
 
-            ! RESCUE shifts XBASE to XBASE + XOPT. Update D, MODERR, and XIMPROVED.
+            ! RESCUE shifts XBASE to the best point before RESCUE. Update D, MODERR, and XIMPROVED.
             ! Do NOT calculate QRED according to this D, as it is not really a trust region step.
+            ! Note that QRED will be used afterward for defining IMPROVE_GEO and REDUCE_RHO.
             d = max(sl, min(su, d)) - xpt(:, kopt)
             moderr = f - fval(kopt) - quadinc(d, xpt, gopt, pq, hq)
             ximproved = (f < fval(kopt))
@@ -353,7 +373,7 @@ do tr = 1, maxtr
             xosav = xpt(:, kopt)
             call updateh(knew_tr, kopt, d, xpt, bmat, zmat)
             call updatexf(knew_tr, ximproved, f, max(sl, min(su, xosav + d)), kopt, fval, xpt)
-            call updateq(1_IK, knew_tr, ximproved, bmat, d, moderr, xdrop, xosav, xpt, zmat, gopt, hq, pq)
+            call updateq(knew_tr, ximproved, bmat, d, moderr, xdrop, xosav, xpt, zmat, gopt, hq, pq)
             ! Try whether to replace the new quadratic model with the alternative model, namely the
             ! least Frobenius norm interpolant.
             call tryqalt(bmat, fval - fval(kopt), ratio, sl, su, xpt(:, kopt), xpt, zmat, itest, gopt, hq, pq)
@@ -441,6 +461,11 @@ do tr = 1, maxtr
         ! RESCUE to calculate a new geometry step, without which the code may encounter an infinite
         ! cycling. We have modified RESCUE so that it introduces at least one new point into XPT.
         ! This improves the performance a bit and simplifies the flow of the code.
+        ! 3. It is temping to incorporate XOPT+D into the interpolation set no matter whether RESCUE
+        ! is called or not. However, this is cannot be done without recalculating KNEW_GEO, because
+        ! XPT has been changed by RESCUE, so that it is invalid to replace XPT(:, KNEW_GEO) with
+        ! XOPT+D anymore. However, if we recalculate KNEW_GEO, then D should also be recalculated
+        ! accordingly, which will complicate the flow.
         vlag = calvlag(kopt, bmat, d, xpt, zmat)
         den = calden(kopt, bmat, d, xpt, zmat)
         if (.not. (is_finite(sum(abs(vlag))) .and. den(knew_geo) > HALF * vlag(knew_geo)**2)) then
@@ -491,7 +516,7 @@ do tr = 1, maxtr
             xosav = xpt(:, kopt)
             call updateh(knew_geo, kopt, d, xpt, bmat, zmat)
             call updatexf(knew_geo, ximproved, f, max(sl, min(su, xosav + d)), kopt, fval, xpt)
-            call updateq(1_IK, knew_geo, ximproved, bmat, d, moderr, xdrop, xosav, xpt, zmat, gopt, hq, pq)
+            call updateq(knew_geo, ximproved, bmat, d, moderr, xdrop, xosav, xpt, zmat, gopt, hq, pq)
         end if
     end if
 
@@ -519,11 +544,10 @@ do tr = 1, maxtr
     ! 2. Before a geometry step, shift XBASE if SUM(XOPT**2) >= 1.0E3*DELBAR**2.
     if (sum(xpt(:, kopt)**2) >= 1.0E3_RP * delta**2) then
         ! Other possible criteria: SUM(XOPT**2) >= 1.0E4*DELTA**2, SUM(XOPT**2) >= 1.0E4*RHO**2.
-        sl = min(sl - xpt(:, kopt), ZERO)
-        su = max(su - xpt(:, kopt), ZERO)
         call shiftbase(kopt, xbase, xpt, zmat, bmat, pq, hq)
-        ! SHIFTBASE shifts XBASE to XBASE + XOPT and XOPT to 0.
         xbase = max(xl, min(xu, xbase))
+        sl = min(xl - xbase, ZERO)
+        su = max(xu - xbase, ZERO)
     end if
 end do
 
